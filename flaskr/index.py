@@ -11,7 +11,7 @@ url = "https://api.ebay.com/identity/v1/oauth2/token"
 
 headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': 'Basic QWxleGlzR28tcHJpY2VwcmUtUFJELTNjYTcxNjFkMi1kM2VmNTA1NzpQUkQtY2E3MTYxZDJhNThiLTY2M2ItNGM4Ny05Y2VjLThjYmQ='
+    'Authorization': ''
 }
 
 oauth_request = {
