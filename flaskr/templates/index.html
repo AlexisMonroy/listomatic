@@ -1,9 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>TEST</h1>
-    <div>
+    <span>
         <form method="post">
-            <input type="submit">
+            <input type="hidden" name="button" value="Start Auth Flow">
+            <button type="submit">Start Auth Flow</button>
         </form>
+        <form method="post">
+            <input type="hidden" name="button" value="Get User Token">
+            <button type="submit">Get User Token</button>
+        </form>
+        <form method="post">
+            <input type="hidden" name="button" value="Get User Info">
+            <button type="submit">Get User Info</button>
+        </form>
+        {% if oauth_response_data %}
+            <p>{{ oauth_response_data['access_token'] }}</p>
+        {% elif user_token_data %}
+            <p>{{ user_token_data['access_token'] }}</p>
+            <p>{{ user_token_data['refresh_token'] }}</p>
+        {% elif username %}
+            <p>{{ username }}</p>
+        {% else %}
+            <p>There is no information available. You suck. </p>
+        {% endif %}
     </div>
 {% endblock %}

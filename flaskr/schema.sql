@@ -27,8 +27,10 @@ CREATE TABLE IF NOT EXISTS books (
 );
 
 CREATE TABLE IF NOT EXISTS user_tokens (
-    id INTEGER NOT NULL,
+    id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    token INTEGER NOT NULL,
+    oauth_token TEXT,
+    consent_token TEXT,
+    user_token TEXT,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
