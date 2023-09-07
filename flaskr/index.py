@@ -5,6 +5,7 @@ from flask import (
 import requests 
 from flaskr.auth import log_required
 from flaskr.db import get_db
+from flaskr.test import EbayCaller
 from urllib.parse import unquote
 
 

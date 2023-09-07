@@ -2,6 +2,7 @@ import functools
 from flask import (
     Blueprint, flash , g, redirect, render_template, request, session, url_for
 )
+from flaskr.db import get_db
 import requests 
 from urllib.parse import unquote
 
@@ -13,7 +14,7 @@ class EbayCaller(object):
         
         self.oauthHeaders = {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': 'Basic WxleGlzR28tcHJpY2VwcmUtUFJELTNjYTcxNjFkMi1kM2VmNTA1NzpQUkQtY2E3MTYxZDJhNThiLTY2M2ItNGM4Ny05Y2VjLThjYmQ='
+    'Authorization': 'Basic QWxleGlzR28tcHJpY2VwcmUtUFJELTNjYTcxNjFkMi1kM2VmNTA1NzpQUkQtY2E3MTYxZDJhNThiLTY2M2ItNGM4Ny05Y2VjLThjYmQ='
 }
         self.appTokenBody = {
             'grant_type': 'client_credentials',
@@ -39,9 +40,7 @@ class EbayCaller(object):
                 'redirect_uri': 'Alexis_Gonzalez-AlexisGo-pricep-ufgmqsmji'
             }
     #Get DataBase    
-    def getDB(self, db):
-        self.db = db
-        return self.db
+
     #Specify App or Client Auth Flow
     def sendRequest(self, command):
         if command == "Start Auth Flow":
@@ -52,6 +51,7 @@ class EbayCaller(object):
             return self.authResponse
         elif command == "Get User Token":
             self.authResponse = requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.userTokenBody)
+            return self.authResponse
     #Return Response Status Code and Text
     def __str__(self):
         self.statusCode = self.authResponse.status_code
@@ -64,9 +64,26 @@ class EbayCaller(object):
         if not self.responseJson.get("access_token"):
             raise Exception("No access token available")
         else:
-            token = self.responseJson["access_token"]
-            return token
-
+            self.token = self.responseJson["access_token"]
+        if not self.responseJson.get("refresh_token"):
+            self.db = get_db()
+            self.cursor = self.db.cursor()
+            self.cursor.execute(
+                'UPDATE user_tokens SET user_id = (?), oauth_token = (?)',
+                (g.user['id'], self.token)
+            )
+            self.db.commit()
+            self.cursor.close()
+        else:
+            self.refreshToken = self.responseJson["refresh_token"]
+            self.db = get_db()
+            self.cursor = self.db.cursor()
+            self.cursor.execute(
+                'UPDATE user_tokens SET user_token = (?), refresh_token = (?) where user_id = (?)'
+                (self.token, self.refreshToken, g.user['id'])
+            )
+            self.db.commit()
+            self.cursor.close()
 
     def testCall(self, command):
         if command == "app":
