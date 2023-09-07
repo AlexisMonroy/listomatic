@@ -3,31 +3,85 @@ from flask import (
     Blueprint, flash , g, redirect, render_template, request, session, url_for
 )
 import requests 
+from urllib.parse import unquote
 
-class Oauth (object):
+class EbayCaller(object):
     #initialize values for app token request
     def __init__(self):
-        self.url = "https://api.ebay.com/identity/v1/oauth2/token"
-        self.headers = {
+        #app Oauth creds
+        self.oauthUrl= "https://api.ebay.com/identity/v1/oauth2/token"
+        
+        self.oauthHeaders = {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': 'Basic QWxleGlzR28tcHJpY2VwcmUtUFJELTNjYTcxNjFkMi1kM2VmNTA1NzpQUkQtY2E3MTYxZDJhNThiLTY2M2ItNGM4Ny05Y2VjLThjYmQ='
+    'Authorization': 'Basic WxleGlzR28tcHJpY2VwcmUtUFJELTNjYTcxNjFkMi1kM2VmNTA1NzpQUkQtY2E3MTYxZDJhNThiLTY2M2ItNGM4Ny05Y2VjLThjYmQ='
 }
-        self.body = {
+        self.appTokenBody = {
             'grant_type': 'client_credentials',
-            'scope': 'https://api.ebay.com/oauth/api_scopefdsafd'
+            'scope': 'https://api.ebay.com/oauth/api_scope'
         }
-    
+        #User Consent Request
+        self.consentUrl = 'https://auth.ebay.com/oauth2/authorize'
+
+        #dev credentials, RuName 
+        self.consentBody = {
+            'client_id': 'AlexisGo-pricepre-PRD-3ca7161d2-d3ef5057',
+            'redirect_uri': 'Alexis_Gonzalez-AlexisGo-pricep-ufgmqsmji',
+            'response_type': 'code',
+            'scope': 'https://api.ebay.com/oauth/api_scope',
+        }
+        self.encoded_string = 'v%5E1.1%23i%5E1%23I%5E3%23f%5E0%23p%5E3%23r%5E1%23t%5EUl41Xzg6RjVDRDIxMThFMzAwQjk4NDg5ODUzMkY0MDU1QUMzMDlfMV8xI0VeMjYw'
+        self.decoded_string = unquote(self.encoded_string)
+
+        #print(decoded_url)
+        self.userTokenBody = {
+                'grant_type': 'authorization_code',
+                'code': f'{self.decoded_string}',
+                'redirect_uri': 'Alexis_Gonzalez-AlexisGo-pricep-ufgmqsmji'
+            }
+    #Get DataBase    
+    def getDB(self, db):
+        self.db = db
+        return self.db
+    #Specify App or Client Auth Flow
+    def sendRequest(self, command):
+        if command == "Start Auth Flow":
+            self.authResponse = requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.appTokenBody)
+            return self.authResponse
+        elif command == "User Sign In":
+            self.authResponse = requests.get(self.consentUrl, params=self.consentBody)
+            return self.authResponse
+        elif command == "Get User Token":
+            self.authResponse = requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.userTokenBody)
+    #Return Response Status Code and Text
     def __str__(self):
-        print(self.oauth_response.text)
+        self.statusCode = self.authResponse.status_code
+        self.responseText = self.authResponse.text
+        #self.responseData = self.authResponse.json()
+        return f"{self.statusCode}\n{self.responseText}"
+    #Add either App or User Token to DB
+    def addToken(self):
+        self.responseJson = self.authResponse.json()
+        if not self.responseJson.get("access_token"):
+            raise Exception("No access token available")
+        else:
+            token = self.responseJson["access_token"]
+            return token
 
-    def __repr__(self):
-        print(self.oauth_response)
-    #send app token request to Ebay API
-    def get_auth(self):
-        self.error = False
-        self.oauth_response = requests.post(self.url, headers=self.headers, data=self.body)
 
-        if not self.oauth_response.ok:
-            raise Exception(f"Error: {self.oauth_response.status_code}\nApp authorization failed. Review your credentials before trying again.")
-            self.error = True
-        return self.oauth_response, self.error
+    def testCall(self, command):
+        if command == "app":
+            return "Test successful"
+        else:
+            return "Failure"  
+    
+ebayCaller = EbayCaller()
+command = "Start Auth Flow"
+ebayCaller.sendRequest(command)
+try:
+    test_string = ebayCaller.__str__()
+    test_addToken = ebayCaller.addToken()
+    print(test_string)
+    print(test_addToken)
+except Exception as e:
+    print("Error", str(e))
+

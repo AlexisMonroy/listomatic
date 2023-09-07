@@ -25,7 +25,7 @@ def home():
         if button == 'Get User Token':
             #grab consent token
             #db = get_db()
-            #cursor = db.cursor()
+            #cursor = db.cursor() 
             #consent_token = cursor.execute(
                 #'SELECT consent_token from user_tokens where user_id = (?)',
                 #(g.user['id'],)
