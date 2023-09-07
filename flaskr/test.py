@@ -74,6 +74,7 @@ class EbayCaller(object):
             )
             self.db.commit()
             self.cursor.close()
+            return self.token
         else:
             self.refreshToken = self.responseJson["refresh_token"]
             self.db = get_db()
@@ -84,7 +85,12 @@ class EbayCaller(object):
             )
             self.db.commit()
             self.cursor.close()
+            return self.token, self.refreshToken
 
+    def getRedirect(self):
+        self.redirectUrl = self.authResponse.url
+        return self.redirectUrl
+    
     def testCall(self, command):
         if command == "app":
             return "Test successful"
