@@ -32,5 +32,6 @@ CREATE TABLE IF NOT EXISTS user_tokens (
     oauth_token TEXT,
     consent_token TEXT,
     user_token TEXT,
+    refresh_token TEXT,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );

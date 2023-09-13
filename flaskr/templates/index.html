@@ -6,6 +6,10 @@
             <button type="submit">Start Auth Flow</button>
         </form>
         <form method="post">
+            <input type="hidden" name="button" value="User Sign In">
+            <button type="submit">User Sign In</button>
+        </form>
+        <form method="post">
             <input type="hidden" name="button" value="Get User Token">
             <button type="submit">Get User Token</button>
         </form>
@@ -13,13 +17,10 @@
             <input type="hidden" name="button" value="Get User Info">
             <button type="submit">Get User Info</button>
         </form>
-        {% if oauth_response_data %}
-            <p>{{ oauth_response_data['access_token'] }}</p>
-        {% elif user_token_data %}
-            <p>{{ user_token_data['access_token'] }}</p>
-            <p>{{ user_token_data['refresh_token'] }}</p>
-        {% elif username %}
-            <p>{{ username }}</p>
+        {% if caller %}
+            <p>{{ caller }}</p>
+        {% elif auth_response %}
+            <P>{{ auth_response }}</P>
         {% else %}
             <p>There is no information available. You suck. </p>
         {% endif %}
