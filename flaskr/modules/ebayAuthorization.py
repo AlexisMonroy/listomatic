@@ -19,7 +19,7 @@ class ebayTokenizer(object):
 }
         self.appTokenBody = {
             'grant_type': 'client_credentials',
-            'scope': 'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/commerce.identity.readonly'
+            'scope': 'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/sell.inventory'
         }
         #User Consent Request
         self.consentUrl = 'https://auth.ebay.com/oauth2/authorize'
@@ -29,9 +29,9 @@ class ebayTokenizer(object):
             'client_id': 'AlexisGo-pricepre-PRD-3ca7161d2-d3ef5057',
             'redirect_uri': 'Alexis_Gonzalez-AlexisGo-pricep-ufgmqsmji',
             'response_type': 'code',
-            'scope': 'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/commerce.identity.readonly',
+            'scope': 'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/sell.inventory',
         }
-        self.encoded_string = 'v%5E1.1%23i%5E1%23r%5E1%23p%5E3%23I%5E3%23f%5E0%23t%5EUl41XzExOkQxNDY1MEE3NjdGNzMwQjE1OERBNUJFODlBNTcwRTk0XzJfMSNFXjI2MA%3D%3D'
+        self.encoded_string = 'v%5E1.1%23i%5E1%23I%5E3%23f%5E0%23r%5E1%23p%5E3%23t%5EUl41Xzg6NTRGRjg5NTU4QTQ3QjkzODI1N0RGODlBNUFBMUIxOUVfMV8xI0VeMjYw'
         self.decoded_string = unquote(self.encoded_string)
 
         #print(decoded_url)
