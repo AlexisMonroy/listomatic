@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS books (
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS books (
     genre TEXT,
     publisher TEXT,
     publication_year TEXT,
+    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id) 
 );
 
@@ -33,5 +35,6 @@ CREATE TABLE IF NOT EXISTS user_tokens (
     consent_token TEXT,
     user_token TEXT,
     refresh_token TEXT,
+    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );

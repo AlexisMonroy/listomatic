@@ -21,6 +21,9 @@
             <p>{{ caller }}</p>
         {% elif auth_response %}
             <P>{{ auth_response }}</P>
+        {% elif caller %}
+            <p>{{ auth_response }}</p>
+            <p>{{ caller }}</p>
         {% else %}
             <p>There is no information available. You suck. </p>
         {% endif %}

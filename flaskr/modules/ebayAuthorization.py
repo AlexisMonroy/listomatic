@@ -7,7 +7,7 @@ import requests
 from urllib.parse import unquote
 from flaskr.db import get_db
 
-class EbayCaller(object):
+class ebayTokenizer(object):
     #initialize values for app token request
     def __init__(self):
         #app Oauth creds
@@ -31,7 +31,7 @@ class EbayCaller(object):
             'response_type': 'code',
             'scope': 'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/commerce.identity.readonly',
         }
-        self.encoded_string = 'v%5E1.1%23i%5E1%23r%5E1%23f%5E0%23I%5E3%23p%5E3%23t%5EUl41Xzc6MTE2RTU5NUQ1OERCMzlEMUMxNUY3N0QxNTRBNjJGRjRfMl8xI0VeMjYw'
+        self.encoded_string = 'v%5E1.1%23i%5E1%23r%5E1%23p%5E3%23I%5E3%23f%5E0%23t%5EUl41XzExOkQxNDY1MEE3NjdGNzMwQjE1OERBNUJFODlBNTcwRTk0XzJfMSNFXjI2MA%3D%3D'
         self.decoded_string = unquote(self.encoded_string)
 
         #print(decoded_url)
@@ -41,8 +41,8 @@ class EbayCaller(object):
                 'redirect_uri': 'Alexis_Gonzalez-AlexisGo-pricep-ufgmqsmji'
             }
         self.uri = 'https://apiz.ebay.com/commerce/identity/v1/user/'
-
-        self.user_headers = {'Authorization': 'Bearer v^1.1#i^1#p^3#f^0#I^3#r^0#t^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'}
+    
+        self.user_headers = None
     #Get DataBase    
 
     #Specify App or Client Auth Flow
@@ -69,8 +69,14 @@ class EbayCaller(object):
          if self.authResponse is not None:
             self.statusCode = self.authResponse.status_code
             self.responseText = self.authResponse.text
-            #self.responseData = self.authResponse.json()
-            return f"{self.statusCode}\n{self.responseText}"
+            self.db = get_db()
+            self.cursor = self.db.cursor()
+            self.user_tokens_info= self.cursor.execute(
+                'SELECT user_id, user_token, refresh_token, consent_token FROM user_tokens where user_id = (?)',
+                (g.user['id'],)
+            ).fetchone()
+            self.tokens_string = str(self.user_tokens_info[1])
+            return f"Status Code: {self.statusCode}\nResponse Text: {self.responseText}\nUser Tokens: {self.tokens_string}"
          
          raise Exception("There is no response. Request not sent.")
     
@@ -115,11 +121,10 @@ class EbayCaller(object):
                     self.cursor.close()
                     return self.token
                     
-                    raise Exception("User information not found.")
                 
                 raise Exception("There is no token. Error retrieving information.")
             
-            raise Exception("Error with request.")
+            raise Exception("Error with request. Status code: '%s'" % self.authResponse.status_code)
             
         raise Exception("There is no response. Request not sent.")
             
@@ -169,6 +174,38 @@ class EbayCaller(object):
             raise Exception("Error with request.")
         
         raise Exception("There is no response. Request not sent.")
+
+    def getToken(self):
+        info_header = self.user_headers
+        if info_header is not None:
+            return info_header
+
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+        self.user_id = self.cursor.execute(
+            'SELECT user_id FROM user_tokens where user_id = (?)',
+            (g.user['id'],)
+        ).fetchone()
+
+        if self.user_id is not None:
+
+            self.user_oauth_token = self.cursor.execute(
+            'SELECT user_token FROM user_tokens where user_id = (?)',
+            (g.user['id'],)
+        ).fetchone()
+            if self.user_oauth_token is not None:
+
+                self.authorization_code = str(self.user_oauth_token[0])
+                self.user_headers = {'Authorization': f'Bearer {self.authorization_code}'}
+                return
+            
+            raise Exception("No Oauth Token Found.")
+            
+        raise Exception("User not found.")
+
+        
+            
+        
 
     def getRedirect(self):
         self.redirectUrl = self.authResponse.url

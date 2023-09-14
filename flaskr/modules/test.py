@@ -6,7 +6,6 @@ from flask import (
 import requests 
 from urllib.parse import unquote
 
-caller = caller.addRefreshToken()
     
 ebayCaller = EbayCaller()
 command = "Start Auth Flow"
