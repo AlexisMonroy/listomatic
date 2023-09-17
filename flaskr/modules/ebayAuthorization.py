@@ -31,7 +31,7 @@ class ebayTokenizer(object):
             'response_type': 'code',
             'scope': 'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/sell.inventory',
         }
-        self.encoded_string = 'v%5E1.1%23i%5E1%23I%5E3%23f%5E0%23r%5E1%23p%5E3%23t%5EUl41Xzg6NTRGRjg5NTU4QTQ3QjkzODI1N0RGODlBNUFBMUIxOUVfMV8xI0VeMjYw'
+        self.encoded_string = 'v%5E1.1%23i%5E1%23p%5E3%23I%5E3%23f%5E0%23r%5E1%23t%5EUl41Xzc6OEQyNTIyNUUxODA2NTI1QjZEOTFDREQxRTI3RjdFMDVfMl8xI0VeMjYw'
         self.decoded_string = unquote(self.encoded_string)
 
         #print(decoded_url)
@@ -147,8 +147,8 @@ class ebayTokenizer(object):
 
                     if self.user_id is not None:
 
-                        if self.user_id == g.user['id']:
-
+                        if self.user_id[0] == g.user['id']:
+                            
                             self.db = get_db()
                             self.cursor = self.db.cursor()
                             self.cursor.execute(
@@ -157,8 +157,8 @@ class ebayTokenizer(object):
                             )
                             self.db.commit()
                             self.cursor.close()
-                            return self.token, self.refreshToken
-                        
+                            return self.token, self.refreshToken   
+                
                     self.cursor.execute(
                         'INSERT into user_tokens (user_id, user_token, refresh_token) VALUES (?, ?, ?)',
                         (g.user['id'], self.token, self.refreshToken)
@@ -166,8 +166,7 @@ class ebayTokenizer(object):
                     self.db.commit()
                     self.cursor.close()
                     return self.token, self.refreshToken
-                
-                    raise Exception("User information not found.")
+            
                 
                 raise Exception("There is no token. Error retrieving information.")
             

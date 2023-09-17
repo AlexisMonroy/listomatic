@@ -20,6 +20,7 @@ def page_not_found(error):
 def home():
     #send oauth token request
     if request.method == 'POST':
+        print(type(g.user['id']))
         caller = ebayTokenizer()
         button = request.form['button']
         #listen for call
@@ -45,6 +46,7 @@ def home():
             if button == "Get User Info":
                 caller.getToken()
                 auth_response = caller.sendRequest(button)
+                print(auth_response.text)
                 if auth_response.status_code == 200:
                     return render_template('index.html', caller=auth_response.text)
                 
