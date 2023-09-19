@@ -17,8 +17,10 @@
     <div id="results">
         {% if caller %}
             {{ caller }}
-        {% elif title %}
-            {{ title }}   
+        {% elif form_data %}
+            {% for key in form_data %}
+                {{ form_data[key] }}   
+            {% endfor %}
         {% elif msg %}
             {{ msg }}
         {% endif %}
@@ -26,7 +28,53 @@
     <div id="itemFormWrapper">
         <form method="post" id="itemForm">
             <label for="title">Title</label>
-            <input type="text" name="title" id="title">
+            <input name="title" id="title">
+            
+            <label for="author">Author</label>
+            <input name="author" id="author">
+
+            <label for="quantity">Quantity</label>
+            <input name="quantity" id="quantity">
+
+            <label for="price">Price</label>
+            <input name="price" id="price">
+
+            <label for="description">Description</label>
+            <input name="description" id="description">
+
+            <label for="condition">Condition</label>
+            <input name="condition" id="condition">
+
+            <label for="height">Height</label>
+            <input name="height" id="height">
+
+            <label for="width">Width</label>
+            <input name="width" id="width">
+
+            <label for="length">Length</label>
+            <input name="length" id="length">
+
+            <label for="majWeight">Maj. Weight</label>
+            <input name="majWeight" id="majWeight">
+
+            <label for="minWeight">Min. Weight</label>
+            <input name="minWeight" id="minWeight">
+
+            <label for="pictures">Pictures</label>
+            <input name="pictures" id="pictures">
+
+            <label for="illustrator">illustrator</label>
+            <input name="illustrator" id="illustrator">
+
+            <label for="genre">Genre</label>
+            <input name="genre" id="genre">
+
+            <label for="publisher">Publisher</label>
+            <input name="publisher" id="publisher">
+
+            <label for="publicationYear">Publication Year</label>
+            <input name="publicationYear" id="publicationYear">
+
             <button type="submit" name="upload">Upload Item</button>
         </form>
     </div>
