@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <span>
+    <div>
         <form method="post">
             <input type="hidden" name="button" value="Start Auth Flow">
             <button type="submit">Start Auth Flow</button>
@@ -17,6 +17,8 @@
             <input type="hidden" name="button" value="Get User Info">
             <button type="submit">Get User Info</button>
         </form>
+    </div>
+    <div>
         {% if caller %}
             <p>{{ caller }}</p>
         {% elif auth_response %}

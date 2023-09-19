@@ -10,9 +10,10 @@ from flaskr.db import get_db
 class ebayApiCaller(object):
     #will follow the structure of sendCommand function in ebayAuthorization
     def __init__(self):
-        self.uri = 'https://api.ebay.com/sell/inventory/v1/location/!1993_pochtecha_alexis'
+        self.uri = 'https://api.ebay.com/sell/inventory/v1/location/1993_pochtecha_alexis'
+        self.info_uri = 'https://apiz.ebay.com/commerce/identity/v1/user/'
 
-        self.userHeaders = None
+        self.user_headers = None
 
         self.callBody = {
 
@@ -26,10 +27,6 @@ class ebayApiCaller(object):
                 
             'phone': '4243766461'
         }
-
-    def __repr__(self):
-        self.response = call_response.text
-        self.response_status = call_response.status_code
 
     def getToken(self):
         self.info_header = self.user_headers
@@ -54,36 +51,40 @@ class ebayApiCaller(object):
                 self.authorization_code = str(self.user_oauth_token[0])
                 self.user_headers = {
                     'Authorization': f'Bearer {self.authorization_code}', 
-                    'Consent-Type': 'application/json'                   
+                    'Content-Type': 'application/json'                   
                 }
                 return
             
-            raise Exception("No Oauth Token Found.")
+            raise Exception("No User Token Found.")
             
         raise Exception("User not found.")
 
-    def sendRequest(self, command)
+    def sendRequest(self, command):
 
         command_actions = {
-            "Create Inventory Location": lambda: requests.post(self.uri, headers=self.user_headers, data=self.callBody)
-            "Create Inventory Item": lambda: requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.appTokenBody)
-            "Send Offer": lambda: requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.appTokenBody)
-            "Confirm Offer": lambda: requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.appTokenBody)
+            "Create Ebay Inventory Location": lambda: requests.post(self.uri, headers=self.user_headers, json=self.callBody),
+            "Get Ebay Inventory Location": lambda: requests.get(self.uri, headers=self.user_headers),
+            "Get User Info": lambda: requests.get(self.info_uri, headers=self.user_headers),
+    
+            "Create Inventory Item": lambda: requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.appTokenBody),
+            "Send Offer": lambda: requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.appTokenBody),
+            "Confirm Offer": lambda: requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.appTokenBody),
             "Get Listing Details": lambda: requests.post(self.oauthUrl, headers=self.oauthHeaders, data=self.appTokenBody)
         }
 
         action = command_actions.get(command)
         if action:
             self.authResponse = action()
-            return self.authResponse.text
+            return self.authResponse
 
         self.authResponse = None
         return None
 
     def __str__(self):
         #could insert a guard rail here
-         if self.authResponse is not None:
+        if self.authResponse is not None:
             self.statusCode = self.authResponse.status_code
             self.responseText = self.authResponse.text
+            return (f"Status Code: {self.statusCode}\nReponse Text: {self.responseText}")
         
         raise Exception("No response info. Call not sent. Recheck call parameters.")

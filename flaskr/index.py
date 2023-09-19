@@ -6,6 +6,7 @@ import requests
 from flaskr.auth import log_required
 from flaskr.db import get_db
 from flaskr.modules.ebayAuthorization import ebayTokenizer
+
 from urllib.parse import unquote
 
 
@@ -18,58 +19,82 @@ def page_not_found(error):
 @bp.route('/', methods=('GET', 'POST'))
 @log_required
 def home():
-    #send oauth token request
+    
     if request.method == 'POST':
-        print(type(g.user['id']))
+        
         caller = ebayTokenizer()
         button = request.form['button']
+
         #listen for call
         try:
+
             if button == "User Sign In":
+
                 auth_response = caller.sendRequest(button)
                 auth_redirect = caller.getRedirect()
                 return f'<script>window.open("{auth_redirect}", "_blank");</script>'
         
             if button == "Get User Token":
+                error = None
                 auth_response = caller.sendRequest(button)
                 if auth_response.status_code == 200:
+
                     caller.addRefreshToken()
-                    #if tuple: user_token and refresh_token
-                    #if isinstance(caller, tuple):
-                        #return render_template('index.html', caller=caller) 
                     caller   
                     print(caller)
+
                     return render_template('index.html', caller=caller)
+                
+                error = f"Request failed. Status Code: {auth_response.status_code}"
+
+                if error is not None:
+
+                    flash(error)
                 return render_template('index.html', caller=auth_response)
             
                 
             if button == "Get User Info":
+                
                 caller.getToken()
                 auth_response = caller.sendRequest(button)
                 print(auth_response.text)
                 if auth_response.status_code == 200:
+
                     return render_template('index.html', caller=auth_response.text)
+                
+                error = f"Request failed. Status Code: {auth_response.status_code}"
+
+                if error is not None:
+                    
+                    flash(error)
                 
                 return render_template('index.html', caller=auth_response)
             
             if button == "Start Auth Flow":
+
                 auth_response = caller.sendRequest(button)
                 if auth_response.status_code == 200:
+
                     caller.addOauthToken()
                     caller
                     return render_template('index.html', caller=caller)
-                return render_template('index.html', caller=auth_response)
+                
+                error = f"Request failed. Status Code: {auth_response.status_code}"
 
-            print('TESTING')
-            print(auth_response.text)    
+                if error is not None:
+                    
+                    flash(error)
+
+                return render_template('index.html', caller=auth_response)    
+            
             caller
-            print(caller)
             return render_template('index.html', auth_response=auth_response.text, caller=caller)
         
         except Exception as e:
             print("Error", str(e))
     
     return render_template('index.html')
+
 
         
 @bp.route('/signin_test')
