@@ -32,8 +32,9 @@ def home():
 
                 auth_response = caller.sendRequest(button)
                 auth_redirect = caller.getRedirect()
-                return f'<script>window.open("{auth_redirect}", "_blank");</script>'
-        
+                script = f'<script>window.open("{auth_redirect}", "_blank");</script>'
+                return script
+            
             if button == "Get User Token":
                 error = None
                 auth_response = caller.sendRequest(button)
@@ -74,7 +75,7 @@ def home():
 
                 auth_response = caller.sendRequest(button)
                 if auth_response.status_code == 200:
-
+                    
                     caller.addOauthToken()
                     caller
                     return render_template('index.html', caller=caller)
