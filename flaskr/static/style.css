@@ -1,10 +1,13 @@
 #options {
     display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: 10px solid black;
+    border-radius: 5px;
+    padding: 10px;
+   
 }
 
-#options {
-    display: flex;
-}
 
 #itemFormWrapper {
     display: flex;

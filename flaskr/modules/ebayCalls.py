@@ -194,6 +194,14 @@ class ebayApiCaller(object):
         }
         return product_info
 
+    def getCommand(self, command):
+        if command == "Upload to Database":
+            dbManager = DatabaseManager()
+            #make call to category checker
+            #use return 
+            #dbResponse = dbManager.upload_csv("testbooks.csv")
+            return(self.uri, self.user_headers, self.callBody)
+            
     def sendRequest(self, command):
 
         command_actions = {

@@ -2,6 +2,16 @@
 {% block content %}
     <div id="options">
         <form method="post">
+            <form method="post">
+            <input type="text" name="csvFile" placeholder="Enter CSV name">
+            <input type="hidden" name="button" value="Upload to Database">
+            <button type="submit">Upload to Database</button>
+        </form>
+        <form method="post">
+            <input type="hidden" name="button" value="Get DB Info">
+            <button type="submit">Get DB Info</button>
+        </form>
+        <form method="post">
             <input type="hidden" name="button" value="Create Ebay Inventory Location">
             <button type="submit">Create Ebay Inventory Location</button>
         </form>
@@ -29,14 +39,7 @@
             <input type="hidden" name="button" value="Get User Info">
             <button type="submit">Get User Info</button>
         </form>
-        <form method="post">
-            <input type="hidden" name="button" value="Upload to Database">
-            <button type="submit">Upload to Database</button>
-        </form>
-        <form method="post">
-            <input type="hidden" name="button" value="Get DB Info">
-            <button type="submit">Get DB Info</button>
-        </form>
+    
         <form method="post">
             <input type="hidden" name="button" value="Get Category Aspects">
             <button type="submit">Get Category Aspects</button>
@@ -72,58 +75,5 @@
         {% elif msg %}
             {{ msg }}
         {% endif %}
-    </div>
-    <div id="itemFormWrapper">
-        <form method="post" id="itemForm">
-            <label for="title">Title</label>
-            <input name="title" id="title">
-            
-            <label for="author">Author</label>
-            <input name="author" id="author">
-
-            <label for="quantity">Quantity</label>
-            <input name="quantity" id="quantity">
-
-            <label for="price">Price</label>
-            <input name="price" id="price">
-
-            <label for="description">Description</label>
-            <input name="description" id="description">
-
-            <label for="condition">Condition</label>
-            <input name="condition" id="condition">
-
-            <label for="height">Height</label>
-            <input name="height" id="height">
-
-            <label for="width">Width</label>
-            <input name="width" id="width">
-
-            <label for="length">Length</label>
-            <input name="length" id="length">
-
-            <label for="majWeight">Maj. Weight</label>
-            <input name="majWeight" id="majWeight">
-
-            <label for="minWeight">Min. Weight</label>
-            <input name="minWeight" id="minWeight">
-
-            <label for="pictures">Pictures</label>
-            <input name="pictures" id="pictures">
-
-            <label for="illustrator">illustrator</label>
-            <input name="illustrator" id="illustrator">
-
-            <label for="genre">Genre</label>
-            <input name="genre" id="genre">
-
-            <label for="publisher">Publisher</label>
-            <input name="publisher" id="publisher">
-
-            <label for="publicationYear">Publication Year</label>
-            <input name="publicationYear" id="publicationYear">
-
-            <button type="submit" name="upload">Upload Item</button>
-        </form>
     </div>
 {% endblock %}

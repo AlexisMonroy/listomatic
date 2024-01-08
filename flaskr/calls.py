@@ -13,33 +13,32 @@ bp = Blueprint('calls', __name__, url_prefix='/calls')
 @bp.route("/", methods=('GET', 'POST'))
 def callsIndex():
     if request.method == 'POST':
-    
-        upload = request.form.get('upload')
-        if upload is not None:
-            form_data = {}
-
-            if request.form is not None:
-
-                for key in request.form:
-                    form_data[key] = request.form[key]
-                    print(form_data[key])
-                #ADD GUARD RAIL TO CHECK IF BOOK ENTRY EXISTS
-                #PROBABLY NEED TO RETHINK SCHEMA AND ADD ID COLUMN FOR PRODUCTS
-                db = get_db()
-                cursor = db.cursor()
-                cursor.execute(
-                    'INSERT into books (user_id, quantity, title, author, price, description, condition, height, width, length, weight_maj, weight_min, pictures, illustrator, genre, publisher, publication_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                    (g.user['id'], form_data['title'], form_data['author'], form_data['quantity'], form_data['price'], form_data['description'], form_data['condition'], form_data['height'], form_data['width'], form_data['length'], form_data['majWeight'], form_data['minWeight'], form_data['pictures'], form_data['illustrator'], form_data['genre'], form_data['publisher'], form_data['publicationYear'])
-                )
-                db.commit()
-                cursor.close()
-
-                return render_template('calls/callIndex.html', form_data=form_data)
         
         caller = ebayApiCaller()
         dbManager = DatabaseManager()
         button = request.form['button']
+
         try:
+            #if there is CSV file entered, upload the CSV file
+            if request.form["csvFile"]:
+                csvFile = "\\" + request.form["csvFile"] + ".csv"  
+                dbResponse = dbManager.upload_csv(csvFile)
+                #print(dbResponse)
+                return render_template('calls/callIndex.html', caller=dbResponse)
+                
+           # if request.form["dbTable"]:
+                #dbResponse = 
+            #if button:
+              # response = caller.getCommand(button)
+              
+                
+            
+            if button == "Get DB Info":
+
+                error = None
+                dbResponse = dbManager.get_product_info("1")
+                
+                return render_template('calls/callIndex.html', caller=dbResponse)
 
             if button == "Create Ebay Inventory Location":
 
@@ -125,19 +124,6 @@ def callsIndex():
 
                     return render_template('calls/callIndex.html', caller=caller)
                 
-            if button == "Upload to Database":
-
-                error = None
-                dbResponse = dbManager.upload_csv("testbooks.csv")
-                
-                return render_template('calls/callIndex.html', caller=dbResponse)
-            
-            if button == "Get DB Info":
-
-                error = None
-                dbResponse = dbManager.get_product_info("1")
-                
-                return render_template('calls/callIndex.html', caller=dbResponse)
                 
             if button == "Get Category Aspects":
 
@@ -224,8 +210,7 @@ def callsIndex():
         except Exception as e:
             print("Error", str(e)) 
         
-        print("Upload is None: ", upload)
-        return render_template('calls/callIndex.html', upload=upload)
+        return render_template('calls/callIndex.html')
 
         
     return render_template('calls/callIndex.html')
