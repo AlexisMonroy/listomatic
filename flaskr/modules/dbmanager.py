@@ -16,13 +16,21 @@ class DatabaseManager(object):
  
     def categoryChecker(self, categoryId):
         #BOOKS
-        if categoryId == "261186" or "461186" or "561186":
+        if categoryId == "261186":
             
 
-            self.dbQuery = '''INSERT OR IGNORE into newbooks VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
+            self.dbQuery = '''INSERT OR IGNORE into books VALUES (
+            ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?
+            )'''
             
-            return self.dbQuery
+            self.pendingQuery = '''INSERT OR IGNORE into pending VALUES (
+            ?, ?, ?, ?
+            )'''
+            return self.dbQuery, self.pendingQuery
         
         return None
     
@@ -80,11 +88,12 @@ class DatabaseManager(object):
                 categoryKey = str(list(category.keys())[0])
 
                 #grab category call info from category checker
-                self.query = self.categoryChecker(categoryKey)
+                self.uploadCsvQuery, self.insertPendingQuery = self.categoryChecker(categoryKey)
 
                 for lst in category:
                    
                     for item in category[lst]:
+                        
                         #add userId
                         item.update(userId)
 
@@ -105,14 +114,29 @@ class DatabaseManager(object):
                             
                         #CONVERT ITEM DETAILS TO TUPLE AND INSERT INTO DB
                         itemTuple = tuple(itemDetails)
-                        #print(itemTuple)
+                        pendingTuple = (item["ProductId"], item["Category"], g.user["id"], timeString)
+                        
+                        
                         try:
-                            self.cursor.execute(self.query, itemTuple)
+                            #INSERT ITEM DETAILS INTO RESPECTIVE TABLE
+                            self.cursor.execute(self.uploadCsvQuery, itemTuple)
                             self.db.commit()
+
                         except Exception as e:
-                            print("ERROR UPLOADING TO DATABASE: ", str(e))
+
+                            print("ERROR UPLOADING TO CATEGORY TABLE: ", str(e))
                             return e
-                        #print(itemTuple)
+                        
+                        try:
+                            #INSERT PRODUCTID INTO PENDING
+                            self.cursor.execute(self.insertPendingQuery, pendingTuple)
+                            self.db.commit()
+
+                        except Exception as e:
+
+                            print("ERROR INSERTING INTO PENDING TABLE: ", str(e))
+                            return e
+                        
             
             self.cursor.close()
             return self.sortedCategories
@@ -132,6 +156,8 @@ class DatabaseManager(object):
 
         return product_dict
 
+    def getPendingItems(self):
+        pass
         
     #insert product ids into pending table
     
