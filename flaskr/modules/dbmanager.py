@@ -34,6 +34,67 @@ class DatabaseManager(object):
         
         return None
     
+    def categoryCallBody(self, categoryId, item):
+        if categoryId == 261186:
+
+            productGenres = item["genre"].split(', ')
+            self.invRecordBody = {
+                
+                "availability": {
+                    "shipToLocationAvailability": {
+                        "quantity": item["quantity"]
+                    }
+                },
+                "condition": "USED_GOOD",
+                "packageWeightAndSize": { 
+                    "dimensions" : { 
+                        "height" : item["height"],
+                        "length" : item["length"],
+                        "unit" : "INCH",
+                        "width" : item["width"]
+                    },
+                        #"packageType" : "MAILING_BOX",
+                        "weight" : { 
+                            "unit" : "OUNCE",
+                            "value" : item["weight"]
+                        }
+                },
+                "product": {
+                    "title": item["title"],
+                    "description": item["description"],
+                    "aspects": {
+                        "Author": [
+                            item["author"]
+                        ],
+                        "Book Title": [
+                            item["title"]
+                        ],
+                        "Language": [
+                            "English"
+                        ],
+                        "Genre": productGenres,
+                    # "Illustrator": [
+                        # item["illustrator"]
+                    # ],
+                        "Publisher": [
+                            item["publisher"]
+                        ],
+                        "Publication Year": [
+                            item["publicationYear"]
+                        ]
+                    },
+                    "imageUrls": [
+                        "https://alexismonroy.github.io/images/AgeofEnlightmentGreatAgesofMan/AgeofEnlightmentGreatAgesofMan0.jpg",
+                        "https://alexismonroy.github.io/images/AgeofEnlightmentGreatAgesofMan/AgeofEnlightmentGreatAgesofMan1.jpg",
+                        "https://alexismonroy.github.io/images/AgeofEnlightmentGreatAgesofMan/AgeofEnlightmentGreatAgesofMan2.jpg",
+                        "https://alexismonroy.github.io/images/AgeofEnlightmentGreatAgesofMan/AgeofEnlightmentGreatAgesofMan3.jpg"
+                    ]
+
+                }
+
+            }
+
+        return self.invRecordBody
     #insert into database
     def upload_csv(self, csvfile):
 
@@ -141,23 +202,55 @@ class DatabaseManager(object):
             self.cursor.close()
             return self.sortedCategories
         
-    def get_product_info(self, product_id):
+    def get_item(self, product_id):
         self.db = get_db()
         self.cursor = self.db.cursor()
         #return product info using product_id
-        product_info = self.cursor.execute(
+        item = self.cursor.execute(
             '''SELECT * from books where product_id = (?)''',
             (product_id)
         ).fetchone()
         #convert into dictionary
-        product_dict = dict(product_info)
+        product_dict = dict(item)
 
         #print(product_dict)
 
         return product_dict
 
     def getPendingItems(self):
-        pass
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+        self.pendingQuery = '''SELECT * FROM pending'''
+        self.categoryNameQuery = '''SELECT categoryName from categories where categoryId = ?'''
+        
+
+        #get list of pendingId's
+        self.pendingItems = self.cursor.execute(self.pendingQuery).fetchall()
+        self.pendingItemDetails = []
+
+        for item in self.pendingItems:
+
+            try:
+
+                pendProductId = item["productId"]
+                pendCategoryId = item["categoryId"]
+
+                #get category Name 
+                categoryNameObject = self.cursor.execute(self.categoryNameQuery, (pendCategoryId,)).fetchone()
+                categoryName = categoryNameObject["categoryName"]
+                
+                #get item details and add to pendItemDetails
+                pendingItemDetail = self.cursor.execute(f'''SELECT * FROM {categoryName} WHERE productId = ?''', (pendProductId,)).fetchone()
+                self.pendingItemDetails.append(pendingItemDetail)
+
+            except Exception as e:
+                print("ERROR GETTING ITEM DETAILS: ", str(e))
+
+        for detailList in self.pendingItemDetails:
+            print(detailList["productId"])
+
+
+        return self.pendingItemDetails
         
     #insert product ids into pending table
     

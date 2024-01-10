@@ -195,12 +195,30 @@ class ebayApiCaller(object):
         return product_info
 
     def getCommand(self, command):
-        if command == "Upload to Database":
+        if command == "Create Inventory Record":
+            #get item details for call body from Database 
             dbManager = DatabaseManager()
-            #make call to category checker
-            #use return 
-            #dbResponse = dbManager.upload_csv("testbooks.csv")
-            return(self.uri, self.user_headers, self.callBody)
+            self.itemDetailsList = dbManager.getPendingItems()
+            self.invRecordResponses = []
+
+            for item in self.itemDetailsList:
+                self.productSku = item["productId"]
+                self.invRecordUri = f"https://api.ebay.com/sell/inventory/v1/inventory_item/{self.productSku}"
+                self.invRecordHeaders = {
+            'Authorization': 'Bearer v^1.1#i^1#I^3#f^0#r^0#p^3#t^H4sIAAAAAAAAAOVZe4wbRxk/36uN0gRBaKAHAddNippo7dn3enNn4dz5YkPuZTu51mq5jHdnfZPbV3Znz+cUocuBUoQAibZB0KglBaSCIiQIakUrqASqggBVggpUSIMgJIKGCCmqKkEDFGZ9l4vvUB6wJ8US/sfab7755vt9r5lvBsz3rtt+JH/krxtit3UenwfznbEYux6s6+3ZsbGrs6+nA7QwxI7Pb53vXuh6vd+HlumqReS7ju2j+Jxl2r7aJA4kAs9WHehjX7WhhXyVaGopO7JH5ZJAdT2HOJpjJuKFoYGEzEFoyCgtimIaKUijVPuKzLJDxwWJkwRJkiWocbyk03HfD1DB9gm0yUCCA5zAAJZhQRkoKuBUQUoKfLqSiO9Dno8dm7IkQSLTVFdtzvVadL2+qtD3kUeokESmkB0ujWULQ7nRcn+qRVZmyQ4lAkngr/wadHQU3wfNAF1/Gb/JrZYCTUO+n0hlFldYKVTNXlHmf1C/aWpJgLygQ17iBTmNeGVNTDnseBYk19cjpGCdMZqsKrIJJo0bWZRao3oAaWTpa5SKKAzFw7+JAJrYwMgbSOR2ZR/YW8oVE/HS+LjnzGId6SFSjhM4VhE4RUhkyDSqQ1tHHrZrBEP7YIAPERMvLbkod8ngq9YcdGwdh+bz46MO2YWo/millWRVbLESZRqzx7ysQULdWvhYsGxNsRK6d9GfAZm2Qw8ji5ok3vy8sS+uBMfVcFir8JA5pKeRIEEZCWkBVpfCI8z1SCGSCb2UHR9PhbqgKmwwFvRmEHFNqCFGo+YNLOodXeVFg+MVAzG6lDYYIW0YTFXUJYY1EAIIVataWvn/jBRCPFwNCFqOltUDTbgDiZLmuGjcMbHWSKxmadahpdiY8wcS04S4aipVr9eTdT7peLUUBwCbun9kT0mbRhZMLPPiGzMzuBkhGqKzfKyShku1maNBSEJjJjK8p49DjzRKyDQp4UoIr9Ats5p6DZCDJqYWKNMl2gtj3vEJ0iNB09Es1tAU1m8RsjDXr4GOYyVBkRVeBgCkI4E0nRq2RxCZdm4VzGtADOtDYSgSNlpOIWkvVK1VCCxVIZ6XGVqSAIgENuu6BcsKCKyaqNBmvhRkURLFSPDcILhliXgNVIGpmIEP616jEQlauAuHua5iaKjEmUF2+5XTYm64mCvlp8pjH82NRkJbRIaH/OlyiLPd4jQ7kf1Ilv5G9lQCVjFr5ZzjDjqjMm/tKFQcSIb4vbOzxmiDlYiYL9ZYC6V3DU/MNYYbZS6o+cHYaIno8ojVqA8MRDJSCWkearPSVZxwKweGuOEdZmWm5Nbt1OTBWU8W5MCZZocH91ZqsOFj6f4dyoQSDfxIrd0yfe222zDsw1xvwxT3FhNzqlmBpuhXJKC5WtvVa8DxuqgJiFUUAIGuyTLUEWdIhoEMICtc5O23zfBmTTSH/d0O43r0HOt6iBkvDjG8BmVWYnWO0XlkiECUI+7L7ebmtdqW/bB9iwotzPW1hRfO96kA6OJkeHJIao6VcmBApkPSVFPr+M0wpSiNtvoaStL2u3kLlPQQ1B3bbNzcfJ+2j0lsz9LJjvffzIGa5gQ2iXa2Rzr2aM8/FXi4veJvMe2mdjv2IWiiQ8yqNGQCo2Yd9K0DOBL+0K7t2LaNZ0ulybFitMZtCM22WzHVIVLSoiAzglJVGEETqkwaiTKDFJSGiiByst69EOuPduPQdu0qKwN68OFl7qZPPasILXdk/3FRmlr5ZpHpaP7YhdiPwELsxc5YDPSDbew94O7err3dXXf0+ZjQWgWNpI9rNiSBh5IzqOFC7HVu6njjq0fzg325sS9uf7jc+PmxH3fc0fJkcvwh8N7lR5N1Xez6lhcU8P6rIz3sO96zgRMAywKg0E5dqoB7ro52s5u73/3MC+eObv3ZoydPPHji8KcuPPGHFzsfeRpsWGaKxXo6aBx0ZI7/9u3LR9P37a7nL/35ifmFk099Jnn2oT9t6/nb37vO3rmufurMxtgnf7/ll+/cVzzzWemBV1898ux3vvn5cw96P7h4UXXeNdx1/kNvXOh935ubKtWNp9jbJu8+v/Nzz1E5+efNraVtHz9T+Pql4Njtz+cPf1r9MJDf+udzL9cfb6Tfvhwb/e5J5r5Lj7kTv9n/tRO9Fy/PWE+fPfnSl369YPWd/eHO86/3nT71qy2Hs8pftt2be6tjy05xav1Tm75Rf+3b+1/7/kz3ublfKJsXXrnwSjaOvmxlg++NMP/aOvmFe/FLP/3Km8d+94k/vrD9Hz955K79T05uvjT3eP/Dl7evPybc/ugzJ+668/RjO6sffPLlZz+W/xb7gdOLvvw3xxR/ecwaAAA=', 
+            'Content-Language': 'en-US',
+            'Content-Type': 'application/json'
+        }
+                #pass in categoryId and get callBody
+                self.invRecordBody = dbManager.categoryCallBody(item["category"], item)
+                
+                self.invRecordResponse = requests.put(self.invRecordUri, headers=self.invRecordHeaders, json=self.invRecordBody)
+
+                print(self.invRecordResponse.status_code)
+                self.invRecordResponses.append(self.invRecordResponse.text)
+
+            return self.itemDetailsList
+            
             
     def sendRequest(self, command):
 
@@ -238,3 +256,4 @@ class ebayApiCaller(object):
             return (f"Status Code: {self.statusCode}\nReponse Text: {self.responseText}")
         
         raise Exception("No response info. Call not sent. Recheck call parameters.")
+    
