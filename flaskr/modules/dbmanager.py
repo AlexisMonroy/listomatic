@@ -34,7 +34,7 @@ class DatabaseManager(object):
         
         return None
     
-    def categoryCallBody(self, categoryId, item):
+    def categoryInvCallBody(self, categoryId, item):
         if categoryId == 261186:
 
             productGenres = item["genre"].split(', ')
@@ -94,7 +94,79 @@ class DatabaseManager(object):
 
             }
 
-        return self.invRecordBody
+            return self.invRecordBody
+    
+    def categoryCreateOfferBody(self, categoryId, item, fId, pId, rId):
+        
+        if categoryId == 261186:
+
+            self.createOfferBody = {
+                "sku": item["productId"],
+                "categoryId": "261186",
+                "format": "FIXED_PRICE",
+                "listingDescription": item["description"],
+                "listingDuration": "GTC",
+                "listingPolicies": {
+                    "fulfillmentPolicyId": fId,
+                    "paymentPolicyId": pId,
+                    "returnPolicyId": rId,
+                },
+                "listingStartDate": "2024-01-15T07:00:00Z",
+                "marketplaceId": "EBAY_US",
+                "merchantLocationKey": "1993_twt_pochteca_alexis",
+                "pricingSummary": {
+                    "price": {
+                        "currency": "USD",
+                        "value": str(item["price"])
+                    }
+                }
+            }
+        
+            return self.createOfferBody
+    
+    def deleteOfferId(self, offerId):
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+
+        self.deleteOfferQuery = '''DELETE FROM offerIds WHERE offerId = ?'''
+        try:
+            self.cursor.execute(self.deleteOfferQuery, (offerId,))
+        except Exception as e:
+            print("ERROR DELETING OFFER: ", str(e))
+        self.db.commit()
+        self.cursor.close()
+        return ("Successfully Deleted Offer")
+    
+    def getOfferId(self):
+
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+
+        self.OfferIdQuery = '''SELECT * FROM offerIds'''
+        self.OfferIdObject = self.cursor.execute(self.OfferIdQuery).fetchall()
+
+        return self.OfferIdObject
+    
+    def insertOfferId(self, offerId, productId, categoryId, timestamp):
+        
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+
+        self.insertOfferQuery = '''INSERT OR IGNORE into offerIds VALUES (
+        ?, ?, ?, ?
+        )'''
+        self.insertTuple = (offerId, productId, categoryId, timestamp)
+        
+        try:
+            self.cursor.execute(self.insertOfferQuery, self.insertTuple)
+            self.db.commit()
+        except Exception as e:
+            print("ERROR INSERTING OFFER ID: ", str(e))
+
+        self.cursor.close()
+        return("Successfully Inserted Offer Id")
+
+
     #insert into database
     def upload_csv(self, csvfile):
 
@@ -216,6 +288,23 @@ class DatabaseManager(object):
         #print(product_dict)
 
         return product_dict
+
+    def getPendingId(self, productId):
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+
+        self.pendingQuery = '''SELECT * FROM pending WHERE productId = ?'''
+
+        print(productId)
+        try:
+
+            self.offerIdObject = self.cursor.execute(self.pendingQuery, (productId,)).fetchone()
+
+        except Exception as e:
+
+            print("ERROR GETTING PRODUCT ID: ", str(e))
+        
+        return self.offerIdObject
 
     def getPendingItems(self):
         self.db = get_db()
