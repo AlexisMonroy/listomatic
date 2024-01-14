@@ -31,7 +31,7 @@ class ebayTokenizer(object):
             'response_type': 'code',
             'scope': 'https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account',
         }
-        self.encoded_string = 'v%5E1.1%23i%5E1%23I%5E3%23p%5E3%23r%5E1%23f%5E0%23t%5EUl41XzExOkRBQzUzNEU0NjZDMjA1QjlEMENGRjQwNTY4MTY3RTgyXzFfMSNFXjI2MA%3D%3D'
+        self.encoded_string = 'v%5E1.1%23i%5E1%23f%5E0%23I%5E3%23r%5E1%23p%5E3%23t%5EUl41XzU6ODNBQjgwNDE4Q0IyOTY3RjUzQkM3M0Q2OTg2NkRDMTBfMl8xI0VeMjYw'
         self.decoded_string = unquote(self.encoded_string)
 
         #print(decoded_url)

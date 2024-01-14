@@ -34,8 +34,18 @@ class DatabaseManager(object):
         
         return None
     
-    def categoryInvCallBody(self, categoryId, item):
+    def categoryInvCallBody(self, categoryId, item, pictures):
         if categoryId == 261186:
+            
+            #use number of pictures and title to create list of imageurls
+            imageList = []
+            for i in range(pictures):
+                
+                title = item["title"]
+                titleNoSpace = title.replace(" ", "")
+                imageUrl = f"https://alexismonroy.github.io/images/{titleNoSpace}/{titleNoSpace}"
+                titleUrl = imageUrl + str(i) + ".jpg"
+                imageList.append(titleUrl)
 
             productGenres = item["genre"].split(', ')
             self.invRecordBody = {
@@ -83,13 +93,7 @@ class DatabaseManager(object):
                             item["publicationYear"]
                         ]
                     },
-                    "imageUrls": [
-                        "https://alexismonroy.github.io/images/AgeofEnlightmentGreatAgesofMan/AgeofEnlightmentGreatAgesofMan0.jpg",
-                        "https://alexismonroy.github.io/images/AgeofEnlightmentGreatAgesofMan/AgeofEnlightmentGreatAgesofMan1.jpg",
-                        "https://alexismonroy.github.io/images/AgeofEnlightmentGreatAgesofMan/AgeofEnlightmentGreatAgesofMan2.jpg",
-                        "https://alexismonroy.github.io/images/AgeofEnlightmentGreatAgesofMan/AgeofEnlightmentGreatAgesofMan3.jpg"
-                    ]
-
+                    "imageUrls": imageList
                 }
 
             }
@@ -165,8 +169,46 @@ class DatabaseManager(object):
 
         self.cursor.close()
         return("Successfully Inserted Offer Id")
+    
+    def insertPendingId(self):
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+        pass
 
+    def deletePendingId(self, productId):
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+        self.deletePendingQuery = '''DELETE FROM pending where productId = ?'''
 
+        try:
+            self.cursor.execute(self.deletePendingQuery, (productId,))
+            self.db.commit()
+        except Exception as e:
+            print("ERROR DELETING FROM PENDING: ", str(e))
+            
+        self.cursor.close()
+        return ("Successfully deleted item from pending.")
+        
+
+    def insertPostedId(self, productId, categoryId, userId, timestamp):
+        self.db = get_db()
+        self.cursor = self.db.cursor()
+
+        self.insertPostedQuery = '''INSERT OR IGNORE into posted VALUES (
+        ?, ?, ?, ?
+        )'''
+
+        self.insertTuple = (productId, categoryId, userId, timestamp)
+
+        try:
+            self.cursor.execute(self.insertPostedQuery, self.insertTuple)
+            self.db.commit()
+        except Exception as e:
+            print("ERROR INSERTING INTO POSTED TABLE: ", str(e))
+        
+        self.cursor.close()
+        return ("Successfully Inserted Item into Posted Table")
+    
     #insert into database
     def upload_csv(self, csvfile):
 
